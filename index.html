@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>ระบบตรวจสอบรถ Emergency - ICU</title>
-  
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
+
   <style>
     * { font-family: 'Prompt', sans-serif; box-sizing: border-box; }
     body { background-color: #f0fdf4; }
@@ -25,7 +25,7 @@
 </head>
 <body class="min-h-full pb-10">
   <div class="max-w-5xl mx-auto p-2 sm:p-4">
-    
+
     <div class="bg-white rounded-xl shadow-sm p-card sm:p-5 mb-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <div class="bg-emerald-500 p-2 sm:p-3 rounded-lg hide-mobile">
@@ -72,7 +72,7 @@
       <div class="p-card sm:p-4 border-b border-emerald-100 bg-emerald-50">
         <h2 class="text-base sm:text-lg font-bold text-emerald-800">🚑 บันทึกการตรวจสอบรถประจำวัน</h2>
       </div>
-      
+
       <form id="emergencyForm" class="p-card sm:p-5">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
           <div>
@@ -92,7 +92,7 @@
         </div>
 
         <div class="space-y-6">
-          
+
           <div class="bg-blue-50 p-card sm:p-5 rounded-xl border border-blue-100">
             <h3 class="font-bold text-blue-800 mb-3 text-lg border-b border-blue-200 pb-2">ชั้นที่ 1 (ข้ามยาใน Box)</h3>
             <div class="p-5 bg-white rounded-lg border border-blue-200 shadow-sm mx-auto mb-4">
@@ -163,7 +163,7 @@
 
     <div class="bg-white rounded-xl shadow-sm overflow-hidden mt-6 border border-gray-200">
       <div class="p-card sm:p-4 border-b border-gray-200 bg-gray-50 flex flex-col sm:flex-row justify-between items-center gap-3">
-        <h2 class="text-base font-bold text-gray-800">📊 ประวัติการตรวจ 15 รายการล่าสุด</h2>
+        <h2 class="text-base font-bold text-gray-800">📊 ประวัติการตรวจทั้งหมด (ตามเดือน/ปีที่เลือก)</h2>
         <div class="flex gap-2 w-full sm:w-auto">
           <select id="filter-month" onchange="displayHistoryRecords()" class="flex-1 sm:flex-none p-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-emerald-500 font-bold text-center"></select>
           <select id="filter-year" onchange="displayHistoryRecords()" class="flex-1 sm:flex-none p-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-emerald-500 font-bold text-center"></select>
@@ -208,7 +208,7 @@
         <div><label class="block text-sm font-bold text-gray-700 mb-1">ชื่อยา/เวชภัณฑ์</label><input type="text" id="med-name" required class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"></div>
         <div><label class="block text-sm font-bold text-gray-700 mb-1">ประเภท</label><select id="med-type" required class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"><option value="ยา">💊 ยา</option><option value="อุปกรณ์ทางการแพทย์">🏥 อุปกรณ์ทางการแพทย์</option></select></div>
         <div><label class="block text-sm font-bold text-gray-700 mb-1">วันหมดอายุ</label><input type="date" id="med-expiry" required class="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"></div>
-        
+
         <div id="med-calc-info" class="hidden grid grid-cols-2 gap-3 pt-3 border-t">
            <div><p class="text-xs text-gray-500">จำนวนวันที่เหลือ</p><p id="med-info-days" class="font-bold text-lg text-emerald-600">-</p></div>
            <div><p class="text-xs text-gray-500">สถานะ</p><p id="med-info-status" class="font-bold">-</p></div>
@@ -237,46 +237,46 @@
   <script>
     // 🚀 URL ของระบบ ICU
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyj6405At-O-XdT-_O6yish9DZQvh1-RUTuIKX-6YD_mDMVpoh_A4_fx5olauM02945uQ/exec';
-    
+
     // 💡 รายการอุปกรณ์ของ ICU (รวม 32 ชิ้น)
     const equipmentDataFloor1 = [
-      'Syringe Disposable ขนาดต่างๆ อย่างละ 3', 
+      'Syringe Disposable ขนาดต่างๆ อย่างละ 3',
       'เข็มฉีดยา เบอร์18,21,24 อย่างละ 10'
     ]; // 2 ชิ้น (Index 1-2)
-    
+
     const equipmentDataFloor2 = [
-      'Extension Tube 3 set', 
-      'Set IV 3 set', 
-      'IV Catheter No. 24, 22, 20, 18 อย่างละ 3', 
-      'Three - way 3 อัน', 
-      'In jection plug 3 อัน', 
-      'sterline water 5 อัน', 
-      'Transpore 1 นิ้ว 2 ม้วน', 
-      'พลาสเตอร์เหนียวติด Tube 10 เส้น', 
-      'กรรไกร 1', 
-      'Tourniquet 2 ชิ้น', 
-      'สำลี Alcohol 5 อัน', 
-      'ใบเลื่อย 3 อัน', 
-      'ชามรูปไต 1', 
-      '0.9 % NSS (1,000 ml,500 ml อย่าง 2 ขวด)', 
-      '5% DW 100 ml 2 ขวด', 
-      'ไฟฉาย 1', 
+      'Extension Tube 3 set',
+      'Set IV 3 set',
+      'IV Catheter No. 24, 22, 20, 18 อย่างละ 3',
+      'Three - way 3 อัน',
+      'In jection plug 3 อัน',
+      'sterline water 5 อัน',
+      'Transpore 1 นิ้ว 2 ม้วน',
+      'พลาสเตอร์เหนียวติด Tube 10 เส้น',
+      'กรรไกร 1',
+      'Tourniquet 2 ชิ้น',
+      'สำลี Alcohol 5 อัน',
+      'ใบเลื่อย 3 อัน',
+      'ชามรูปไต 1',
+      '0.9 % NSS (1,000 ml,500 ml อย่าง 2 ขวด)',
+      '5% DW 100 ml 2 ขวด',
+      'ไฟฉาย 1',
       'แว่นตา 1'
     ]; // 17 ชิ้น (Index 3-19)
-    
+
     const equipmentDataFloor3 = [
-      'Laryngoscope + Blade (พร้อมถ่าน) 1 ชุด', 
-      'Magill Forceps (เด็ก/ผู้ใหญ่) (1,1)', 
-      'Guide wire (เด็ก/เด็กโต/ผู้ใหญ่) (1,1,4)', 
-      'K-Y Jelly 1', 
-      'ET-Tube No.3, 3.5, 4,4.5 อย่างละ 1', 
-      'ET-Tube No.5, 5.5, 6,6.5,8.5 อย่างละ 1', 
-      'ET-Tube No.7, 7.5, 8 อย่างละ 2', 
-      'Orol Airway No 4,5,6 อย่างละ 1 อัน', 
-      'Orol Airway No 7,8,9,10 อย่างละ 3 อัน', 
-      'สาย Suction No 14,16 อย่างละ 1', 
-      'Ambu bag (เด็กเล็ก/เด็กโต/ผู้ใหญ่) อย่างละ 1 ชุด', 
-      'O2 Mask c bag,O2 canular อย่างละ 1', 
+      'Laryngoscope + Blade (พร้อมถ่าน) 1 ชุด',
+      'Magill Forceps (เด็ก/ผู้ใหญ่) (1,1)',
+      'Guide wire (เด็ก/เด็กโต/ผู้ใหญ่) (1,1,4)',
+      'K-Y Jelly 1',
+      'ET-Tube No.3, 3.5, 4,4.5 อย่างละ 1',
+      'ET-Tube No.5, 5.5, 6,6.5,8.5 อย่างละ 1',
+      'ET-Tube No.7, 7.5, 8 อย่างละ 2',
+      'Orol Airway No 4,5,6 อย่างละ 1 อัน',
+      'Orol Airway No 7,8,9,10 อย่างละ 3 อัน',
+      'สาย Suction No 14,16 อย่างละ 1',
+      'Ambu bag (เด็กเล็ก/เด็กโต/ผู้ใหญ่) อย่างละ 1 ชุด',
+      'O2 Mask c bag,O2 canular อย่างละ 1',
       'สายต่อออกซิเจน 1 เส้น'
     ]; // 13 ชิ้น (Index 20-32)
 
@@ -293,10 +293,10 @@
         const params = new URLSearchParams();
         params.append('action', action);
         if (data !== null) params.append('data', JSON.stringify(data));
-        
+
         try {
-          const response = await fetch(WEB_APP_URL, { 
-            method: 'POST', 
+          const response = await fetch(WEB_APP_URL, {
+            method: 'POST',
             body: params,
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
           });
@@ -316,12 +316,12 @@
       const mm = String(today.getMonth() + 1).padStart(2, '0');
       const dd = String(today.getDate()).padStart(2, '0');
       document.getElementById('date').value = `${yyyy}-${mm}-${dd}`;
-      
+
       setupHistoryFilters(); buildEquipmentFormUI(); initializeSignaturePad();
       updateHeaderClock(); setInterval(updateHeaderClock, 1000);
-      
+
       await fetchInitialDataFromDatabase();
-      
+
       setInterval(async () => {
         try {
           const freshMedicines = await apiCall('getMedicines');
@@ -354,7 +354,7 @@
 
     function setupHistoryFilters() {
       const mSel = document.getElementById('filter-month'); const ySel = document.getElementById('filter-year');
-      const currentMonth = new Date().getMonth() + 1; const currentYear = new Date().getFullYear(); 
+      const currentMonth = new Date().getMonth() + 1; const currentYear = new Date().getFullYear();
       mSel.innerHTML = '<option value="">ทุกเดือน</option>';
       for(let i=1; i<=12; i++) mSel.innerHTML += `<option value="${i}" ${i === currentMonth ? 'selected' : ''}>เดือน ${i}</option>`;
       ySel.innerHTML = '<option value="">ทุกปี</option>';
@@ -368,7 +368,7 @@
       if (parts.length === 3) {
           let p0 = parseInt(parts[0]); let p1 = parseInt(parts[1]); let p2 = parseInt(parts[2]);
           let y, m, d;
-          if (p2 > 1000) { y = p2; if (p0 > 12) { d = p0; m = p1; } else if (p1 > 12) { m = p0; d = p1; } else { d = p0; m = p1; } } 
+          if (p2 > 1000) { y = p2; if (p0 > 12) { d = p0; m = p1; } else if (p1 > 12) { m = p0; d = p1; } else { d = p0; m = p1; } }
           else if (p0 > 1000) { y = p0; m = p1; d = p2; }
           if (y > 2500) y -= 543;
           return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
@@ -382,7 +382,7 @@
         const payload = await apiCall('getInitialData');
         allMedicines = payload.medicines || []; inspectorNames = payload.names || []; allInspections = payload.inspections || [];
         await calculateMedicinesAndSync(true);
-        populateInspectorDropdown(); displayHistoryRecords(); 
+        populateInspectorDropdown(); displayHistoryRecords();
         updateConnectionStatus('success', 'เชื่อมต่อข้อมูลสำเร็จ พร้อมใช้งาน');
       } catch (error) {
         updateConnectionStatus('error', 'เชื่อมต่อฐานข้อมูลล้มเหลว โปรดรีเฟรช');
@@ -393,11 +393,11 @@
       if(allMedicines.length === 0) return;
       const today = new Date(); today.setHours(0,0,0,0);
       let hasChanges = false; const updatesToSync = [];
-      
+
       allMedicines.forEach(med => {
         if (!med.expiry_date) return;
         let expD = new Date(med.expiry_date);
-        
+
         const parts = med.expiry_date.split(/[-/]/);
         if(parts.length === 3) {
            expD = new Date(`${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}T00:00:00`);
@@ -414,10 +414,10 @@
             exDate.setDate(exDate.getDate() - 14);
             if (dDaysCalc <= 1) calcStat = 'หมดอายุ'; else if (dDaysCalc <= 7) calcStat = 'อุปกรณ์ใกล้หมดอายุ'; else if (dDaysCalc <= 14) calcStat = 'ควรเปลี่ยนอุปกรณ์';
           }
-          
+
           const d = String(exDate.getDate()).padStart(2, '0'); const m = String(exDate.getMonth() + 1).padStart(2, '0');
-          const calcExDateStr = `${d}/${m}/${exDate.getFullYear()}`; 
-          
+          const calcExDateStr = `${d}/${m}/${exDate.getFullYear()}`;
+
           if (med.days_remaining != dDaysCalc || med.status !== calcStat || med.exchange_date !== calcExDateStr) {
             med.days_remaining = dDaysCalc; med.status = calcStat; med.exchange_date = calcExDateStr;
             updatesToSync.push({ id: med.id, exchange_date: calcExDateStr, days_remaining: dDaysCalc, status: calcStat });
@@ -454,11 +454,11 @@
               </div>
             </div>
           `;
-          globalEqCounter++; 
+          globalEqCounter++;
         }
         container.innerHTML = htmlContent;
       };
-      
+
       buildRadios(equipmentDataFloor1, 'floor1-container'); // eq_1 ถึง eq_2
       buildRadios(equipmentDataFloor2, 'floor2-container'); // eq_3 ถึง eq_19
       buildRadios(equipmentDataFloor3, 'floor3-container'); // eq_20 ถึง eq_32
@@ -474,7 +474,7 @@
       const resizePad = () => {
         const rect = canvasPad.getBoundingClientRect();
         canvasPad.width = rect.width; canvasPad.height = rect.height;
-        ctxPad.lineWidth = 2.5; ctxPad.lineCap = 'round'; ctxPad.lineJoin = 'round'; ctxPad.strokeStyle = '#047857'; 
+        ctxPad.lineWidth = 2.5; ctxPad.lineCap = 'round'; ctxPad.lineJoin = 'round'; ctxPad.strokeStyle = '#047857';
       };
       resizePad(); window.addEventListener('resize', resizePad);
 
@@ -511,21 +511,21 @@
           return 3;
         };
         const wA = getWeight(a.status); const wB = getWeight(b.status);
-        if (wA !== wB) return wA - wB; 
-        
+        if (wA !== wB) return wA - wB;
+
         const remainA = a.days_remaining === null || isNaN(a.days_remaining) ? 9999 : parseInt(a.days_remaining);
         const remainB = b.days_remaining === null || isNaN(b.days_remaining) ? 9999 : parseInt(b.days_remaining);
-        return remainA - remainB; 
+        return remainA - remainB;
       });
 
       tbody.innerHTML = allMedicines.map((med, idx) => {
         let bgStatus = 'bg-emerald-100 text-emerald-800 border border-emerald-200';
-        let txtColor = 'text-emerald-600'; 
+        let txtColor = 'text-emerald-600';
 
         if (med.status.includes('หมดอายุห้ามใช้') || med.status.includes('หมดอายุ')) {
-          bgStatus = 'bg-red-100 text-red-700 border border-red-300 font-extrabold animate-pulse'; txtColor = 'text-red-600'; 
+          bgStatus = 'bg-red-100 text-red-700 border border-red-300 font-extrabold animate-pulse'; txtColor = 'text-red-600';
         } else if (med.status.includes('ควร') || med.status.includes('ใกล้')) {
-          bgStatus = 'bg-yellow-100 text-yellow-800 border border-yellow-300 font-bold'; txtColor = 'text-orange-500'; 
+          bgStatus = 'bg-yellow-100 text-yellow-800 border border-yellow-300 font-bold'; txtColor = 'text-orange-500';
         }
         const displayDays = med.days_remaining !== null ? med.days_remaining : '-';
         return `
@@ -559,56 +559,56 @@
     }
 
     function openAddMedicineModal() {
-      document.getElementById('edit-med-id').value = ''; 
+      document.getElementById('edit-med-id').value = '';
       document.getElementById('med-modal-title').innerText = 'เพิ่มยาหรือเวชภัณฑ์ใหม่';
-      document.getElementById('medicineForm').reset(); 
+      document.getElementById('medicineForm').reset();
       document.getElementById('med-calc-info').classList.add('hidden');
       document.getElementById('med-modal').classList.remove('hidden');
     }
 
     function openEditMed(idx) {
       const medInfo = allMedicines[idx];
-      document.getElementById('edit-med-id').value = medInfo.id; 
-      document.getElementById('med-name').value = medInfo.medicine_name; 
+      document.getElementById('edit-med-id').value = medInfo.id;
+      document.getElementById('med-name').value = medInfo.medicine_name;
       document.getElementById('med-type').value = medInfo.type;
-      
+
       const ymd = parseDateToYMD(medInfo.expiry_date);
       document.getElementById('med-expiry').value = ymd;
       document.getElementById('med-calc-info').classList.remove('hidden');
-      
+
       let statusColor = 'text-emerald-600';
       if(medInfo.status.includes('หมดอายุ')) statusColor = 'text-red-600';
       else if(medInfo.status.includes('ควร') || medInfo.status.includes('ใกล้')) statusColor = 'text-orange-500';
-      
+
       document.getElementById('med-info-days').innerText = medInfo.days_remaining !== null ? medInfo.days_remaining : '-';
       document.getElementById('med-info-days').className = `font-bold text-lg ${statusColor}`;
       document.getElementById('med-info-status').innerText = medInfo.status || '-';
       document.getElementById('med-info-status').className = `font-bold ${statusColor}`;
       document.getElementById('med-info-exchange').innerText = medInfo.exchange_date || '-';
-      
-      document.getElementById('med-modal-title').innerText = 'แก้ไขข้อมูลยา/เวชภัณฑ์'; 
+
+      document.getElementById('med-modal-title').innerText = 'แก้ไขข้อมูลยา/เวชภัณฑ์';
       document.getElementById('med-modal').classList.remove('hidden');
     }
 
     document.getElementById('medicineForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const rawExpDate = document.getElementById('med-expiry').value; 
+      const rawExpDate = document.getElementById('med-expiry').value;
       const parts = rawExpDate.split('-');
-      const formatExp = `${parts[2]}/${parts[1]}/${parts[0]}`; 
-      
+      const formatExp = `${parts[2]}/${parts[1]}/${parts[0]}`;
+
       const payload = {
-        id: document.getElementById('edit-med-id').value || null, 
-        medicine_name: document.getElementById('med-name').value, 
-        type: document.getElementById('med-type').value, 
-        expiry_date: formatExp, exchange_date: '', days_remaining: null, status: '', 
-        recorded_at: '' 
+        id: document.getElementById('edit-med-id').value || null,
+        medicine_name: document.getElementById('med-name').value,
+        type: document.getElementById('med-type').value,
+        expiry_date: formatExp, exchange_date: '', days_remaining: null, status: '',
+        recorded_at: ''
       };
-      
+
       try {
         Swal.fire({ title: 'กำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
         await apiCall('saveMedicine', payload);
-        closeModal('med-modal'); 
-        await fetchInitialDataFromDatabase(); 
+        closeModal('med-modal');
+        await fetchInitialDataFromDatabase();
         Swal.fire({ icon: 'success', title: 'บันทึกยาสำเร็จ', timer: 1500, showConfirmButton: false });
       } catch (err) { Swal.fire('ข้อผิดพลาด', err.message, 'error'); }
     });
@@ -653,28 +653,29 @@
       const tbody = document.getElementById('history-table-body');
       const fMonth = document.getElementById('filter-month').value;
       const fYear = document.getElementById('filter-year').value;
-      
+
       let filteredRecords = allInspections;
-      
+
       if(fMonth || fYear) {
         filteredRecords = allInspections.filter(h => {
           const ymd = parseDateToYMD(h.date_display);
           if(!ymd) return false;
           const parts = ymd.split('-');
-          const y = parts[0]; const m = parseInt(parts[1]).toString(); 
+          const y = parts[0]; const m = parseInt(parts[1]).toString();
           let matchM = fMonth ? (m === fMonth) : true;
           let matchY = fYear ? (y === fYear) : true;
           return matchM && matchY;
         });
       }
-      
+
       if(filteredRecords.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-gray-500 font-bold">ไม่มีประวัติการตรวจในเดือน/ปีที่เลือก</td></tr>`;
         return;
       }
-      
-      const recentHistory = filteredRecords.slice(-15).reverse();
-      
+
+      // แสดงทุกแถวของเดือน/ปีที่เลือก (ไม่ตัดเหลือ 15 รายการ) เรียงล่าสุดขึ้นก่อน
+      const recentHistory = filteredRecords.slice().reverse();
+
       tbody.innerHTML = recentHistory.map(history => {
         return `
           <tr class="border-b border-gray-100 hover:bg-emerald-50 transition-colors">
@@ -702,21 +703,21 @@
       }
 
       let equipListHtml = '';
-      
+
       equipListHtml += `<h5 class="text-xs font-bold text-blue-700 mt-3 mb-1 uppercase tracking-wider">ชั้นที่ 1 (ข้ามยา Box)</h5>`;
       for(let i=1; i<=2; i++) {
         const val = targetRecord['eq_'+i];
         const status = val === '✓' ? '<span class="text-green-600 font-bold">✓ มี</span>' : (val === '✗' ? '<span class="text-red-600 font-bold">✗ ไม่มี</span>' : '-');
         equipListHtml += `<div class="flex justify-between border-b border-blue-100 py-2"><span class="text-gray-600 text-xs sm:text-sm w-3/4">${equipmentDataFloor1[i-1]}</span> <span>${status}</span></div>`;
       }
-      
+
       equipListHtml += `<h5 class="text-xs font-bold text-green-700 mt-4 mb-1 uppercase tracking-wider">ชั้นที่ 2</h5>`;
       for(let i=3; i<=19; i++) {
         const val = targetRecord['eq_'+i];
         const status = val === '✓' ? '<span class="text-green-600 font-bold">✓ มี</span>' : (val === '✗' ? '<span class="text-red-600 font-bold">✗ ไม่มี</span>' : '-');
         equipListHtml += `<div class="flex justify-between border-b border-green-100 py-2"><span class="text-gray-600 text-xs sm:text-sm w-3/4">${equipmentDataFloor2[i-3]}</span> <span>${status}</span></div>`;
       }
-      
+
       equipListHtml += `<h5 class="text-xs font-bold text-purple-700 mt-4 mb-1 uppercase tracking-wider">ชั้นที่ 3</h5>`;
       for(let i=20; i<=32; i++) {
         const val = targetRecord['eq_'+i];
@@ -753,16 +754,16 @@
     function loadRecordForEdit(recordId) {
       const targetRecord = allInspections.find(record => record.id === recordId);
       if(!targetRecord) return;
-      
+
       isEditingRecord = true;
       document.getElementById('checkId').value = targetRecord.id;
-      
+
       const ymd = parseDateToYMD(targetRecord.date_display);
       if(ymd) document.getElementById('date').value = ymd;
-      
+
       document.getElementById('shift').value = targetRecord.shift;
       document.getElementById('inspector').value = targetRecord.inspector;
-      
+
       const boxRadio = document.querySelector(`input[name="medicineType"][value="${targetRecord.box_type}"]`);
       if(boxRadio) boxRadio.checked = true;
 
@@ -774,12 +775,12 @@
           if(eqRadio) eqRadio.checked = true;
         }
       }
-      
+
       const submitBtn = document.getElementById('submit-btn');
       submitBtn.innerHTML = '🆙 บันทึกการแก้ไขข้อมูล';
       submitBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
       submitBtn.classList.add('bg-orange-500', 'hover:bg-orange-600');
-      
+
       document.getElementById('cancel-edit-btn').classList.remove('hidden');
       window.scrollTo({ top: document.getElementById('emergencyForm').offsetTop - 30, behavior: 'smooth' });
     }
@@ -792,21 +793,21 @@
       submitBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
       submitBtn.classList.remove('bg-orange-500', 'hover:bg-orange-600');
       document.getElementById('cancel-edit-btn').classList.add('hidden');
-      
+
       const today = new Date();
       const yyyy = today.getFullYear();
       const mm = String(today.getMonth() + 1).padStart(2, '0');
       const dd = String(today.getDate()).padStart(2, '0');
       document.getElementById('date').value = `${yyyy}-${mm}-${dd}`;
-      
-      clearSignature(); 
+
+      clearSignature();
     }
 
     async function removeHistoryRecord(recordId) {
       if(confirm('🚨 แจ้งเตือน: คุณต้องการลบประวัติการตรวจนี้ถาวรใช่หรือไม่?')) {
         Swal.fire({ title: 'กำลังลบประวัติ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
         await apiCall('deleteInspectionRecord', recordId);
-        await fetchInitialDataFromDatabase(); 
+        await fetchInitialDataFromDatabase();
         Swal.fire({ icon: 'success', title: 'ลบประวัติสำเร็จ', timer: 1500, showConfirmButton: false });
       }
     }
@@ -814,14 +815,14 @@
     // 🚀 บังคับตรวจสอบให้ครบ 32 ชิ้น
     document.getElementById('emergencyForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       if (!isEditingRecord && isSignatureEmpty()) {
         return Swal.fire({ icon: 'warning', title: 'ยังไม่ได้ลงนาม', text: 'กรุณาลงนามรับรองในช่องก่อนทำการบันทึกข้อมูลครับ' });
       }
 
       const selectedDate = document.getElementById('date').value;
       const selectedShift = document.getElementById('shift').value;
-      
+
       const parts = selectedDate.split('-');
       const dayNum = parseInt(parts[2], 10);
       const monthNum = parseInt(parts[1], 10) - 1;
@@ -838,7 +839,7 @@
         signature: isSignatureEmpty() ? null : canvasPad.toDataURL('image/png'),
         is_edit: isEditingRecord
       };
-      
+
       let hasMissingItems = false;
       for(let i = 1; i <= 32; i++) {
         const checkedRadio = document.querySelector(`input[name="eq_${i}"]:checked`);
@@ -862,9 +863,9 @@
       try {
         Swal.fire({ title: 'กำลังประมวลผล...', html: 'กรุณารอสักครู่ ระบบกำลังบันทึกข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
         const result = await apiCall('saveInspection', inspectionPayload);
-        if (result.success !== false) { 
+        if (result.success !== false) {
           await Swal.fire({ icon: 'success', title: 'บันทึกข้อมูลสมบูรณ์!', timer: 2000, showConfirmButton: false });
-          cancelEdit(); await fetchInitialDataFromDatabase(); 
+          cancelEdit(); await fetchInitialDataFromDatabase();
         } else {
           throw new Error(result.error || "เกิดข้อผิดพลาดจากฝั่งเซิร์ฟเวอร์");
         }
